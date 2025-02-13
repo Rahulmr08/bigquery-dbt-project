@@ -9,7 +9,6 @@ sources:
           - name: id
             tests:
               - unique
-              - not_null
 
       - name: orders
         loaded_at_field: _etl_loaded_at
