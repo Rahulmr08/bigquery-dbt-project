@@ -6,3 +6,5 @@ select
  customers.first_name,
  customers.last_name
 from customers
+
+

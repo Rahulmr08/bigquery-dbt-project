@@ -1,38 +1,43 @@
-version: 2
+semantic_models:
+  - name: orders
+    description: |
+      Order fact table. This table is at the order grain with one row per order.
+    model: ref('fct_orders')
 
-models:
-  - name: fct_orders
-    description: Analytical orders data.
-    columns:
+    entities:
       - name: order_id
-        description: Primary key of the orders.
+        type: primary
+      - name: customer
+        type: foreign
+        expr: customer_id
 
-      - name: customer_id
-        description: Foreign key of customers_id at dim_customers.
-
+    dimensions:
       - name: order_date
-        description: Date that order was placed by the customer.
-
-      - name: cash_amount
-        description: Total amount paid in cash by the customer with "success" payment status.
-
-      - name: credit_amount
-        description: Total amount paid in credit by the customer with "success" payment status.
-
-      - name: total_amount
-        description: Total amount paid by the customer with "success" payment status.
-
+        type: time
+        type_params:
+          time_granularity: day
       - name: is_order_completed
-        description: "{{ doc('is_order_completed_docblock') }}"
+        type: categorical
 
-  - name: dim_customers
-    description: Customer data. It allows you to analyze customers' perspective linked facts.
-    columns:
-      - name: customer_id
-        description: Primary key of the customers.
+    measures:
+      - name: total_amount
+        description: Total amount paid by the customer with successful payment status.
+        agg: sum
+      - name: order_count
+        expr: 1
+        agg: sum
+      - name: cash_amount
+        description: Total amount paid in cash by the customer with successful payment status.
+        agg: sum
+      - name: credit_amount
+        description: Total amount paid in credit by the customer with successful payment status.
+        agg: sum
+      - name: customers_with_orders
+        description: Distinct count of customers placing orders.
+        agg: count_distinct
+        expr: customer_id
 
-      - name: first_name
-        description: Customer first name.
 
-      - name: last_name
-        description: Customer last name.
+  - name: time_spine_daily
+    description: Time spine model for the semantic layer.
+    model: ref('metricflow_time_spine') 
