@@ -11,7 +11,9 @@ models:
 
   - name: stg_jaffle_shop_orders
     config:
-      materialized: view
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: order_id
     columns:
       - name: order_id
         tests:
